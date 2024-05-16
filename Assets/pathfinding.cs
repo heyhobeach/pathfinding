@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Tilemaps;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [System.Serializable]
 public class Node
@@ -14,9 +15,9 @@ public class Node
 
     public int x, y, G, H;
     //public int x, y, G, H;
-    
+
     public int F { get { return G + H; } }
-    public Node(bool _isWall,bool _isRoad,bool _isPoint,bool _isPlatform, int _x, int _y) { isWall = _isWall;isRoad = _isRoad;isPoint = _isPoint;isplatform = _isPlatform; x = _x; y = _y; }
+    public Node(bool _isWall, bool _isRoad, bool _isPoint, bool _isPlatform, int _x, int _y) { isWall = _isWall; isRoad = _isRoad; isPoint = _isPoint; isplatform = _isPlatform; x = _x; y = _y; }
 }
 public class pathfinding : MonoBehaviour
 {
@@ -60,7 +61,7 @@ public class pathfinding : MonoBehaviour
                     if (col.gameObject.layer == LayerMask.NameToLayer("Platform")) isplatform = true;
                 }
 
-                NodeArray[i, j] = new Node(isWall,isRoad,isPoint,isplatform, i + bottomLeft.x, j + bottomLeft.y);
+                NodeArray[i, j] = new Node(isWall, isRoad, isPoint, isplatform, i + bottomLeft.x, j + bottomLeft.y);
             }
         }
 
@@ -87,8 +88,9 @@ public class pathfinding : MonoBehaviour
             CurNode = OpenList[0];
             string leftright = "";
             for (int i = 1; i < OpenList.Count; i++)
-                if (OpenList[i].F <= CurNode.F && OpenList[i].H < CurNode.H) {//가중치 계산해서 넣는 실질적인 부분
-                    CurNode = OpenList[i]; 
+                if (OpenList[i].F <= CurNode.F && OpenList[i].H < CurNode.H)
+                {//가중치 계산해서 넣는 실질적인 부분
+                    CurNode = OpenList[i];
                 }
 
             OpenList.Remove(CurNode);
@@ -100,26 +102,85 @@ public class pathfinding : MonoBehaviour
             {
                 Node TargetCurNode = TargetNode;
                 int _cnt = 0;
-                while (TargetCurNode != StartNode)
+                while (TargetCurNode != StartNode)//이게 성립하지 않으면 항상 무한 반복중 그렇다면 startnode와 엮어야함
                 {
+                    _cnt++;
                     if (_cnt > 2000)
                     {
+                        Debug.Log("무한 반복");
                         return;
                     }
                     if (TargetCurNode.isplatform)
                     {
-                        Debug.Log(NodeArray[TargetCurNode.x - bottomLeft.x+1, TargetCurNode.y - bottomLeft.y+1].isplatform&& NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y + 1].isPoint);
-                        Debug.Log(NodeArray[TargetCurNode.x - bottomLeft.x -1 , TargetCurNode.y - bottomLeft.y + 1].isplatform && NodeArray[TargetCurNode.x - bottomLeft.x -1, TargetCurNode.y - bottomLeft.y + 1].isPoint);
-                        if((NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isplatform && NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isPoint||//우
-                            NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x - 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isplatform && NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x - 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isPoint)){//좌
-                            Debug.Log(NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y + 1].x+","+ NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y + 1].y
-                                );
+                        //Debug.Log(NodeArray[TargetCurNode.x - bottomLeft.x+1, TargetCurNode.y - bottomLeft.y+1].isplatform&& NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y + 1].isPoint);
+                        //Debug.Log(NodeArray[TargetCurNode.x - bottomLeft.x -1 , TargetCurNode.y - bottomLeft.y + 1].isplatform && NodeArray[TargetCurNode.x - bottomLeft.x -1, TargetCurNode.y - bottomLeft.y + 1].isPoint);
+                        if ((//NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isplatform && NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isPoint||//우
+
+                            NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x - 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isplatform
+                            && NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x - 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isPoint
+                            && !TargetCurNode.isPoint))
+                        {//좌
+                            //Debug.Log(NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x - 1, TargetCurNode.ParentNode.y - bottomLeft.y].x+","+ NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x - 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].y);
+
                             Node temp;
                             temp = TargetCurNode.ParentNode;
+                            NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y].ParentNode = temp;
+                            TargetCurNode.ParentNode = NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y];
                             //TargetCurNode.ParentNode = NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1];
-                            TargetCurNode.ParentNode = NodeArray[temp.x - bottomLeft.x - 1, temp.y - bottomLeft.y + 1];
-                            NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1].ParentNode = temp;
+                            //TargetCurNode.ParentNode = NodeArray[temp.x - bottomLeft.x - 1, temp.y - bottomLeft.y + 1];
+                            //NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1].ParentNode = temp;
                         }
+                        if ((//NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isplatform && NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isPoint||//우
+
+                            NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isplatform
+                            && NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isPoint
+                            && !TargetCurNode.isPoint))
+                        {//좌
+                            //Debug.Log(NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x - 1, TargetCurNode.ParentNode.y - bottomLeft.y].x+","+ NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x - 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].y);
+
+                            Node temp;
+                            temp = TargetCurNode.ParentNode;
+                            NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y].ParentNode = temp;
+                            TargetCurNode.ParentNode = NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y];
+                            //TargetCurNode.ParentNode = NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1];
+                            //TargetCurNode.ParentNode = NodeArray[temp.x - bottomLeft.x - 1, temp.y - bottomLeft.y + 1];
+                            //NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1].ParentNode = temp;
+                        }
+
+                        //if (NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y - 1].isplatform
+                        //    && NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y - 1].isPoint
+                        //    )
+                        if (NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y - 1].isplatform
+                           && NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y - 1].isPoint
+                           && !TargetCurNode.ParentNode.isPoint)
+
+                        {
+                            Debug.Log(string.Format("{0}x좌표 {1}y좌표// 현재좌표 {2} x {3} y//부모좌표 {4}x {5}y//{6},{7}", NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y].x, NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y - 1].y,
+                                TargetCurNode.x, TargetCurNode.y, TargetCurNode.ParentNode.x, TargetCurNode.ParentNode.y, TargetCurNode.ParentNode.ParentNode.x, TargetCurNode.ParentNode.ParentNode.y));
+                            //
+                            Node temp;
+                            temp = TargetCurNode.ParentNode;
+                            NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y - 1].ParentNode = temp;
+                            TargetCurNode.ParentNode = NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y - 1];
+                            //temp =TargetCurNode
+                        }
+
+                        if (NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y - 1].isplatform
+   && NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y - 1].isPoint
+   && !TargetCurNode.ParentNode.isPoint)
+
+                        {
+                            Debug.Log(string.Format("{0}x좌표 {1}y좌표// 현재좌표 {2} x {3} y//부모좌표 {4}x {5}y//{6},{7}", NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y].x, NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y - 1].y,
+                                TargetCurNode.x, TargetCurNode.y, TargetCurNode.ParentNode.x, TargetCurNode.ParentNode.y, TargetCurNode.ParentNode.ParentNode.x, TargetCurNode.ParentNode.ParentNode.y));
+                            //
+                            Node temp;
+                            temp = TargetCurNode.ParentNode;
+                            NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y - 1].ParentNode = temp;
+                            TargetCurNode.ParentNode = NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y - 1];
+                            //temp =TargetCurNode
+                        }
+
+
 
                     }
                     FinalNodeList.Add(TargetCurNode);
@@ -235,7 +296,7 @@ public class pathfinding : MonoBehaviour
             // 코너를 가로질러 가지 않을시, 이동 중에 수직수평 장애물이 있으면 안됨
             if (dontCrossCorner) if (NodeArray[CurNode.x - bottomLeft.x, checkY - bottomLeft.y].isWall || NodeArray[checkX - bottomLeft.x, CurNode.y - bottomLeft.y].isWall) return;
 
-            if(NodeArray[checkX-bottomLeft.x, checkY - bottomLeft.y].isRoad)//checkx와 checky값을 알아야함
+            if (NodeArray[checkX - bottomLeft.x, checkY - bottomLeft.y].isRoad)//checkx와 checky값을 알아야함
             {
                 Node NeighborNode = NodeArray[checkX - bottomLeft.x, checkY - bottomLeft.y];
                 int MoveCost = CurNode.G + (CurNode.x - checkX == 0 || CurNode.y - checkY == 0 ? 10 : 14);
