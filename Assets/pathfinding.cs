@@ -186,55 +186,36 @@ public class pathfinding : MonoBehaviour
 
                                 NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1].isplatform
                                 && NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1].isPoint
-                                && !TargetCurNode.isPoint))
+                                && !TargetCurNode.ParentNode.isPoint))
                             {//ÁÂ
                                 Debug.Log("ÁÂÃø »ó´Ü Æ÷ÀÎÆ®");
-                                //NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1].ParentNode = TargetCurNode.ParentNode;
-
-                                Node temp;
-                                Node _temp = NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1];
-                                temp = NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1];
-                                Debug.Log(temp.x - TargetCurNode.ParentNode.x);
-                                Debug.Log(TargetCurNode.x + "" + TargetCurNode.y);
-                                int sub = temp.x - TargetCurNode.ParentNode.x;
+                                int sub = TargetCurNode.ParentNode.x-NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1].x ;
                                 TargetCurNode.ParentNode = NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1];
 
-                                for (int i = 1; i <= sub; i++)
+                                for(int i = 0; i < sub; i++)
                                 {
-                                    temp.ParentNode = NodeArray[_temp.x + i - bottomLeft.x, _temp.y - bottomLeft.y];
-                                    temp = temp.ParentNode;
-                                    Debug.Log("»ðÀÔ " + (i + 1));
+                                    NodeArray[TargetCurNode.x - bottomLeft.x - 1 + i, TargetCurNode.y - bottomLeft.y + 1].ParentNode = NodeArray[TargetCurNode.x - bottomLeft.x + i, TargetCurNode.y - bottomLeft.y + 1];
                                 }
+                                Debug.Log(sub);
                             }
 
                             if ((//NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isplatform && NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isPoint||//¿ì
 
-                                NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isplatform
-                                && NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].isPoint
+                                NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y + 1].isplatform
+                                && NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y + 1].isPoint
                                 && !TargetCurNode.ParentNode.isPoint))
                             {//ÁÂ
                                 //Debug.Log(NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y].x + "," + NodeArray[TargetCurNode.x - bottomLeft.x - 1, TargetCurNode.y - bottomLeft.y + 1].y);
                                 Debug.Log("¿©±â");
                                 Debug.Log("¿ìÃø »ó´Ü Æ÷ÀÎÆ®");
-                                //int sub = NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].x - TargetCurNode.ParentNode.x;
-                                //Debug.Log(sub);
-                                //TargetCurNode.ParentNode = NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1];
-                                //for(int i = 0; i <= 1; i++)
-                                //{
-                                //    NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1].ParentNode= NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1+i, TargetCurNode.ParentNode.y - bottomLeft.y + 1];
-                                //}
-                                Node temp;
-                                Node _temp = NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1];
-                                temp = NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode.y - bottomLeft.y + 1];
-                                Debug.Log(temp.x - TargetCurNode.ParentNode.x);
-                                int sub = temp.x - TargetCurNode.ParentNode.x;
-                                TargetCurNode.ParentNode = NodeArray[TargetCurNode.ParentNode.x - bottomLeft.x + 1, TargetCurNode.ParentNode .y - bottomLeft.y + 1];
+                                int sub = NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y + 1].x - TargetCurNode.ParentNode.x;
+                                TargetCurNode.ParentNode = NodeArray[TargetCurNode.x - bottomLeft.x + 1, TargetCurNode.y - bottomLeft.y + 1];
                                 
-                                for (int i = 0; i <= sub; i++)
+
+                                Debug.Log(sub);
+                                for(int i = 0; i < sub; i++)
                                 {
-                                    temp.ParentNode = NodeArray[_temp.x - i - bottomLeft.x, _temp.y - bottomLeft.y];
-                                    temp = temp.ParentNode;
-                                    Debug.Log("»ðÀÔ " + (i + 1));
+                                    NodeArray[TargetCurNode.x - bottomLeft.x + 1-i, TargetCurNode.y - bottomLeft.y + 1].ParentNode= NodeArray[TargetCurNode.x - bottomLeft.x -i, TargetCurNode.y - bottomLeft.y + 1];
                                 }
                             }
 
